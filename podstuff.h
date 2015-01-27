@@ -28,6 +28,15 @@ namespace std {
 }
 
 template<typename T, typename U>
+struct method_comparator {
+    U (T::*member_ptr)() const;
+
+    bool operator()(const T& lhs, const T& rhs) {
+        return (lhs.*member_ptr)() < (rhs.*member_ptr)();
+    }
+};
+
+template<typename T, typename U>
 struct member_comparator {
     U T::*member_ptr;
 
@@ -35,6 +44,11 @@ struct member_comparator {
         return lhs.*member_ptr < rhs.*member_ptr;
     }
 };
+
+template<typename T, typename U>
+method_comparator<T,U> by(U (T::*method_ptr)() const) {
+    return {method_ptr};
+}
 
 template<typename T, typename U>
 member_comparator<T,U> by(U T::*member_ptr) {
